@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heart2Heart 💌 Dashboard</title>
+<style>
+body{background:#fff0f5;font-family:Poppins,sans-serif;text-align:center;padding:20px;}
+.answer-card{background:#fff;border-radius:15px;box-shadow:0 0 10px #f48fb1;padding:15px;margin:15px auto;width:80%;max-width:500px;text-align:left;animation:fadeIn 1s;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+h1{color:#d81b60;}
+.question{font-weight:bold;color:#ad1457;}
+.answer{color:#333;margin-top:8px;}
+.score{color:#c2185b;font-weight:600;}
+</style>
+</head>
+<body>
+<h1>💖 Heart2Heart Dashboard 💖</h1>
+<div id="answers"></div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {getDatabase,ref,onChildAdded} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig={apiKey:"AIzaSyD8to-iclRVAyODygA7E-cvNLGE0pv5koU",authDomain:"heartywithcutie.firebaseapp.com",databaseURL:"https://heartywithcutie-default-rtdb.firebaseio.com",projectId:"heartywithcutie",storageBucket:"heartywithcutie.firebasestorage.app",messagingSenderId:"849079591953",appId:"1:849079591953:web:45f6ba0a8d67f9cf62fdb0"};
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
+const answersRef=ref(db,"heart2heart/answers");
+const container=document.getElementById("answers");
+
+onChildAdded(answersRef,(snap)=>{
+  const d=snap.val();
+  const card=document.createElement("div");
+  card.className="answer-card";
+  card.innerHTML=`
+    <p class='question'>💭 ${d.question}</p>
+    <p class='answer'>💌 ${d.answer}</p>
+    <p class='score'>❤️ Score: ${d.score}</p>`;
+  container.prepend(card);
+
+  if(d.score>=100){
+    const msg=document.createElement("h2");
+    msg.innerHTML="💍 Proposal Complete! He married Vikasa 🎉";
+    container.prepend(msg);
+  }
+});
+</script>
+</body>
+</html>

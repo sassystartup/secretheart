@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heart2Heart 💖</title>
+<style>
+body{background:#ffe6eb;font-family:Poppins,sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;}
+.container{background:#fff;border-radius:20px;box-shadow:0 0 20px #f48fb1;padding:30px;text-align:center;width:380px;}
+button{background:#f06292;color:#fff;border:none;padding:10px 18px;border-radius:10px;margin:6px;cursor:pointer;font-size:1em;}
+button:hover{background:#ec407a;}
+textarea{width:90%;margin:8px 0;padding:10px;border-radius:10px;border:2px solid #f8bbd0;font-size:1em;text-align:center;height:80px;}
+#score{color:#d81b60;font-weight:600;margin-bottom:8px;}
+.compliment{color:#ad1457;font-style:italic;margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>💞 SecretHeart 💞</h1>
+  <p id="score">Love Points: 0 / 100 ❤️</p>
+  <div id="difficulty">
+    <button onclick="chooseDifficulty('easy')">Easy (+10)</button>
+    <button onclick="chooseDifficulty('hard')">Hard (+20)</button>
+  </div>
+  <p id="question"></p>
+  <textarea id="answer" placeholder="Type your answer here..."></textarea><br>
+  <button id="submit">Submit 💌</button>
+  <p class="compliment" id="compliment"></p>
+</div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {getDatabase,ref,push} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig={apiKey:"AIzaSyD8to-iclRVAyODygA7E-cvNLGE0pv5koU",authDomain:"heartywithcutie.firebaseapp.com",databaseURL:"https://heartywithcutie-default-rtdb.firebaseio.com",projectId:"heartywithcutie",storageBucket:"heartywithcutie.firebasestorage.app",messagingSenderId:"849079591953",appId:"1:849079591953:web:45f6ba0a8d67f9cf62fdb0"};
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
+
+const easyQ=[
+"If you could go on a dream date, where would it be?",
+"What’s your favorite thing about your girlfriend?",
+"Do you believe everyone deserves a second chance?",
+"What turns you off immediately during intimacy?",
+"What do you hate the most about yourself?",
+"What do you think is the biggest myth about relationships?"
+];
+const hardQ=[
+"If you had a chance to revisit your past love and make things right, Would you?",
+"What's your deepest fear? Have you ever had it come true?",
+"What do you think makes a family truly close?",
+"Does love at first sight exist? Dit it happen to you",
+"What’s the biggest lie you’ve ever told?",
+"Would you lie in a relationship? Why?"
+];
+const compliments=[
+"You’re love-goals 💖","Aww you’re so sweet 🥰","That melted my heart 💞",
+"You are a cutie 💘","Pure rom-com energy 🎬"
+];
+
+let score=0,currentQ=null,currentDiff=null;
+
+function chooseDifficulty(level){
+  currentDiff=level;
+  const list=level==="easy"?easyQ:hardQ;
+  currentQ=list[Math.floor(Math.random()*list.length)];
+  document.getElementById("question").textContent=currentQ;
+  document.getElementById("compliment").textContent="";
+}
+window.chooseDifficulty=chooseDifficulty;
+
+document.getElementById("submit").onclick=()=>{
+  const ans=document.getElementById("answer").value.trim();
+  if(!currentQ)return alert("Choose a difficulty first 💕");
+  if(ans==="")return alert("Type your answer 💞");
+
+  const points=currentDiff==="easy"?10:20;
+  score+=points;
+  if(score>100)score=100;
+  document.getElementById("score").textContent=`Love Points: ${score} / 100 ❤️`;
+
+  const msg=compliments[Math.floor(Math.random()*compliments.length)];
+  document.getElementById("compliment").textContent=msg;
+
+  const answersRef=ref(db,"heart2heart/answers");
+  push(answersRef,{question:currentQ,answer:ans,score:score,timestamp:Date.now()});
+
+  if(score>=100){
+    document.body.innerHTML=`<div class='container'><h1>💍 Congratulations! 💍</h1><p>You’re now virtually married to <b>Vikasa</b> 💖</p><p>Score: 100/100 ❤️</p></div>`;
+  }else{
+    document.getElementById("answer").value="";
+    document.getElementById("question").textContent="";
+  }
+};
+</script>
+</body>
+</html>
